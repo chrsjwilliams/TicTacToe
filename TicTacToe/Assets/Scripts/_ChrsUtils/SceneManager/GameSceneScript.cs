@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
+
 public class GameSceneScript : Scene<TransitionData>
 {
     public bool endGame;
@@ -15,19 +16,35 @@ public class GameSceneScript : Scene<TransitionData>
 
     TaskManager _tm = new TaskManager();
 
-    private void Start()
-    {
-        
-    }
+    public GameBoard board;
+
+    public Player[] players;
+
+    public int currentPlayerIndex;
+    public Player currentPlayer { get; private set; }
 
     internal override void OnEnter(TransitionData data)
     {
-    }
 
-    public void EnterScene()
-    {
-        
+        players = new Player[Services.GameManager.TotalPlayers];
+        for (int i = 0; i < Services.GameManager.TotalPlayers; i++)
+        {
+            players[i] = Instantiate(Services.Prefabs.Player, Vector3.zero, Quaternion.identity, transform);
+            int playerNum = i + 1;
+            players[i].name = "Player " + playerNum;
+            players[i].Init(playerNum, Services.GameManager.AvailableIcons[i]);
+        }
 
+        board = GetComponent<GameBoard>();
+        BoardInfo info;
+        info.row = 3;
+        info.col = 3;
+        Services.GameBoard = board;
+
+        board.Init(info);
+
+        currentPlayerIndex = UnityEngine.Random.Range(0, 1);
+        currentPlayer = players[currentPlayerIndex];
     }
 
     public void SwapScene()

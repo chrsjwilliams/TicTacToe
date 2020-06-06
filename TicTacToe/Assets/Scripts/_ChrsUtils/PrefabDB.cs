@@ -5,15 +5,25 @@
 public class PrefabDB : ScriptableObject
 {
 
-    [SerializeField] private GameObject _player;
-    public GameObject Player
+    [SerializeField] 
+    private Player _player;
+    public Player Player
     {
         get { return _player; }
     }
 
-    [SerializeField] private GameObject[] _scenes;
+    [SerializeField] 
+    private GameObject[] _scenes;
     public GameObject[] Scenes
     {
         get { return _scenes; }
     }
+
+    [SerializeField]
+    private TileSpace _tile;
+    public TileSpace Tile
+    {
+        get { return _tile; }
+    }
+
 }

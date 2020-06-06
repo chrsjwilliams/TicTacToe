@@ -11,6 +11,13 @@ public class GameManager : MonoBehaviour
     public const int LEFT_CLICK = 0;
     public const int RIGHT_CLICK = 1;
 
+    [SerializeField] private int _totalPlayers;
+    public int TotalPlayers
+    {
+        get { return _totalPlayers; }
+
+    }
+
     [SerializeField] private int _numPlayers;
     public int NumPlayers
     {
@@ -28,6 +35,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    [SerializeField] private Color[] _player1Color;
+    public Color[] Player1Color{
+        get { return _player1Color; }
+    }
+
+    [SerializeField] private Color[] _player2Color;
+    public Color[] Player2Color{
+        get { return _player2Color; }
+    }
+
+
     public float duration { get; private set; }
 
 
@@ -36,6 +54,14 @@ public class GameManager : MonoBehaviour
     {
         get { return _mainCamera; }
     }
+
+    [SerializeField] private Sprite[] _availableIcons;
+    public Sprite[] AvailableIcons
+    {
+        get { return _availableIcons; }
+    }
+
+    public Sprite[] selectedIcons;
 
     public void Init()
     {
