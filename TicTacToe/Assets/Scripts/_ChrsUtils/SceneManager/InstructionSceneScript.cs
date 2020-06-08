@@ -31,12 +31,7 @@ public class InstructionSceneScript : Scene<TransitionData>
 
     private void StartGame()
     {
-        _tm.Do
-        (
-
-                        new LERPColor(click, click.color, Color.white, 0.5f))
-               .Then(   new ActionTask(ChangeScene)
-        );
+     
     }
 
     private void TitleTransition()

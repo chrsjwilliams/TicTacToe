@@ -2,77 +2,83 @@
 
 public class BoardEntryAnimation : Task
 {
-    private float timeElapsed;
-    private const float animDuration = 1f;
-    private const float staggerTime = 0.3f;
-    private float totalDuration;
-    private TileSpace[,] map { get { return Services.GameBoard.gameBoard; } }
-    private int largerDimension;
-    private int mapWidth;
-    private int mapHeight;
-    private int currentIndex;
-    private bool[,] tilesOn;
+    private float _timeElapsed;
+    private const float _animDuration = 1f;
+    private const float _staggerTime = 0.3f;
+    private float _totalDuration;
+    private TileSpace[,] _map { get { return Services.GameScene.board.gameBoard; } }
+    private int _largerDimension;
+    private int _mapWidth;
+    private int _mapHeight;
+    private int _currentIndex;
+    private bool[,] _tilesOn;
 
-    private static Vector3 offset = new Vector3(1f, 1f, 0);
-    private Vector3[,] basePositions;
+    private static Vector3 _offset = new Vector3(0, 5f, 0);
+    private Vector3[,] _basePositions;
+
+    private Color _startColor = new Color(1, 1, 1, 0);
+    private Color _targetColor;
+
 
     protected override void Init()
     {
-        timeElapsed = 0;
-        currentIndex = 0;
-        mapWidth = map.GetUpperBound(0)+1;
-        mapHeight = map.GetUpperBound(1)+1;
-        totalDuration = animDuration + (staggerTime * (mapHeight + mapWidth));
-        tilesOn = new bool[mapWidth, mapHeight];
-        basePositions = new Vector3[mapWidth, mapHeight];
-        for (int i = 0; i < mapWidth; i++)
+        _timeElapsed = 0;
+        _currentIndex = 0;
+        _mapWidth = _map.GetUpperBound(0)+1;
+        _mapHeight = _map.GetUpperBound(1)+1;
+        _totalDuration = _animDuration + (_staggerTime * (_mapHeight + _mapWidth));
+        _tilesOn = new bool[_mapWidth, _mapHeight];
+        _basePositions = new Vector3[_mapWidth, _mapHeight];
+        _targetColor = _map[0, 0].renderer.color;
+        for (int i = 0; i < _mapWidth; i++)
         {
-            for (int j = 0; j < mapHeight; j++)
+            for (int j = 0; j < _mapHeight; j++)
             {
-                basePositions[i, j] = map[i, j].transform.position;
+                _basePositions[i, j] = _map[i, j].transform.position;
+                _map[i, j].renderer.color = new Color(0, 0, 0, 0);
             }
         }
     }
 
     internal override void Update()
     {
-        timeElapsed += Time.deltaTime;
+        _timeElapsed += Time.deltaTime;
 
-        for (var i = 0; i < mapWidth; i++)
+        for (var i = 0; i < _mapWidth; i++)
         {
-            for (var j = 0; j < mapHeight; j++)
+            for (var j = 0; j < _mapHeight; j++)
             {
-                var mapTile = map[i, j];
-                if (i + j > currentIndex) continue;
-                if (!tilesOn[i, j])
+                var mapTile = _map[i, j];
+                if (i + j > _currentIndex) continue;
+                if (!_tilesOn[i, j])
                 {
-                    tilesOn[i, j] = true;
+                    _tilesOn[i, j] = true;
                     mapTile.gameObject.SetActive(true);
                 }
-                var progress = Mathf.Min((timeElapsed - ((i + j) * staggerTime)) / animDuration, 1);
-                //mapTile.SetAlpha(Mathf.Lerp(0, targetAlpha,
-                //    EasingEquations.Easing.QuadEaseOut(progress)));
-                mapTile.transform.position = Vector3.Lerp(basePositions[i, j] + offset,
-                    basePositions[i, j], EasingEquations.Easing.QuadEaseOut(progress));
+                var progress = Mathf.Min((_timeElapsed - ((i + j) * _staggerTime)) / _animDuration, 1);
+
+                _map[i, j].renderer.color = Color.Lerp(_map[i, j].renderer.color, _targetColor, EasingEquations.Easing.QuadEaseOut(progress / 100));
+                mapTile.transform.position = Vector3.Lerp(_basePositions[i, j] + _offset,
+                    _basePositions[i, j], EasingEquations.Easing.QuadEaseOut(progress));
             }
         }
 
-        if (timeElapsed >= ((currentIndex + 1) * staggerTime))
+        if (_timeElapsed >= ((_currentIndex + 1) * _staggerTime))
         {
-            currentIndex += 1;
+            _currentIndex += 1;
         }
-        if (timeElapsed >= totalDuration) SetStatus(TaskStatus.Success);
+        if (_timeElapsed >= _totalDuration) SetStatus(TaskStatus.Success);
     }
 
     protected override void OnSuccess()
     {
         base.OnSuccess();
-        for (var i = 0; i < mapWidth; i++)
+        for (var i = 0; i < _mapWidth; i++)
         {
-            for (var j = 0; j < mapHeight; j++)
+            for (var j = 0; j < _mapHeight; j++)
             {
-                map[i, j].gameObject.SetActive(true);
-                map[i, j].transform.position = basePositions[i, j];
+                _map[i, j].gameObject.SetActive(true);
+                _map[i, j].transform.position = _basePositions[i, j];
             }
         }
     }

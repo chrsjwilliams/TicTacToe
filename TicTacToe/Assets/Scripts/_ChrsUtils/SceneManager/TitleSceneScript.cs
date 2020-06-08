@@ -1,33 +1,37 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class TitleSceneScript : Scene<TransitionData>
 {
     public KeyCode startGame = KeyCode.Space;
 
+    public bool hasLoadGame = false;
     [SerializeField]private float SECONDS_TO_WAIT = 0.1f;
 
     private TaskManager _tm = new TaskManager();
 
-    private Text title;
-    private Text click;
+    [SerializeField] private TextMeshProUGUI[] titleText;
 
+    [SerializeField] private TextMeshProUGUI[] buttonText;
 
+    private Color transparent = new Color(0, 0, 0, 0);
+    private float t = 0;
     internal override void OnEnter(TransitionData data)
     {
-        title = GameObject.Find("TITLE").GetComponent<Text>();
-        click = GameObject.Find("Click").GetComponent<Text>();
 
-        /*
-        _tm.Do
-        (
+        Services.EventManager.Register<GameLoadEvent>(OnGameLoad);
 
-                        new WaitTask(SECONDS_TO_WAIT))
-               .Then(new LERPColor(title, white, fontColor, 0.5f))
-               .Then(new LERPColor(click, white, fontColor, 0.5f)
-        );
-        */
+        buttonText[0].color = new Color(0, 0, 0, 0);
 
+        TaskQueue titleEntryTasks = new TaskQueue();
+        Task slideTitleIn = new TitleEntryAnimation(titleText);
+        titleEntryTasks.Add(slideTitleIn);
+
+
+        _tm.Do(titleEntryTasks);
+    
     }
 
     internal override void OnExit()
@@ -35,19 +39,29 @@ public class TitleSceneScript : Scene<TransitionData>
 
     }
 
-    private void StartGame()
+    public void OnGameLoad(GameLoadEvent e)
     {
-        /*
-        _tm.Do
-        (
-               
-                        new WaitTask(SECONDS_TO_WAIT))
-               .Then(   new LERPColor(click,fontColor, white, 0.5f))
-               .Then(   new LERPColor(title,fontColor, white, 0.5f))
-               .Then(   new WaitTask(SECONDS_TO_WAIT))
-              .Then(new ActionTask(ChangeScene)
-        );
-        */
+        hasLoadGame = true;
+    }
+
+    public void StartGame()
+    {
+        hasLoadGame = false;
+        TaskQueue startGameTasks = new TaskQueue();
+        Task slideTitleOut = new TitleEntryAnimation(titleText, true);
+        Task fadeStartText = new LERPColor(buttonText, buttonText[0].color, transparent, 0.5f);
+        Task beginGame = new ActionTask(TransitionToGame);
+
+        startGameTasks.Add(slideTitleOut);
+        startGameTasks.Add(fadeStartText);
+        startGameTasks.Add(beginGame);
+
+        _tm.Do(startGameTasks);
+    }
+
+    public void ToggleMute()
+    {
+        Services.GameManager.ToggleMute();
     }
 
     private void TitleTransition()
@@ -55,7 +69,7 @@ public class TitleSceneScript : Scene<TransitionData>
 
     }
 
-    private void ChangeScene()
+    private void TransitionToGame()
     {
         Services.Scenes.Swap<GameSceneScript>();
     }
@@ -63,10 +77,10 @@ public class TitleSceneScript : Scene<TransitionData>
     private void Update()
     {
         _tm.Update();
-        if (Input.GetKeyDown(startGame) || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+        if(hasLoadGame)
         {
-            Services.AudioManager.PlayClip(Clips.CLICK);
-            StartGame();
+            t += Time.deltaTime;
+            buttonText[0].color = Color.Lerp(transparent, Color.black, Mathf.PingPong(t,1.5f));
         }
     }
 }

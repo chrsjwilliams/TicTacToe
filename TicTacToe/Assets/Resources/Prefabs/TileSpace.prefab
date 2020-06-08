@@ -179,3 +179,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   occupyingPlayer: {fileID: 0}
+  _occupyingIcon: {fileID: 1962408352967800477}

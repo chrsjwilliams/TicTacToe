@@ -1,6 +1,7 @@
 ﻿using UnityEngine.Assertions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -63,6 +64,9 @@ public class GameManager : MonoBehaviour
 
     public Sprite[] selectedIcons;
 
+    [SerializeField] private Sprite[] _audioIcons;
+    private enum AudioIcon { PLAY = 0, MUTE}
+
     public void Init()
     {
         NumPlayers = 1;
@@ -110,6 +114,21 @@ public class GameManager : MonoBehaviour
         _mainCamera = Camera.main;
 	}
 	
+
+    public void ToggleMute(){
+        Services.AudioManager.ToggleMute();
+        Image audioStatusIcon = GameObject.Find("Mute Button").GetComponent<Image>();
+        if(Services.AudioManager.muted)
+        {
+            audioStatusIcon.sprite = _audioIcons[(int)AudioIcon.MUTE];
+        }
+        else
+        {
+            audioStatusIcon.sprite = _audioIcons[(int)AudioIcon.PLAY];
+        }
+
+    }
+
     public void ChangeCameraTo(Camera camera)
     {
         _mainCamera = camera;

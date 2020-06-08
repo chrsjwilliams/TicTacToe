@@ -12,12 +12,18 @@ public class AudioManager : MonoBehaviour
 
     private bool fadeAudio = false;
 
+    private float volume;
+    public bool muted { get; private set; }
+
     private TaskManager tm = new TaskManager();
 	// Use this for initialization
 	void Start ()
     {
         audioLibrary = new Dictionary<Clips, AudioClip>();
         audioSource = GetComponent<AudioSource>();
+        muted = false;
+        volume = 1;
+        audioSource.volume = volume;
         LoadLibrary();
 	}
 
@@ -52,6 +58,13 @@ public class AudioManager : MonoBehaviour
     public void FadeAudio()
     {
         fadeAudio = true;
+    }
+
+    public void ToggleMute()
+    {
+        muted = !muted;
+        if(muted) audioSource.volume = 0;
+        else audioSource.volume = volume;
     }
 
     public void SetVolume(float volume)

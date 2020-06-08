@@ -13,5 +13,5 @@ public class Services
     
     public static GameSceneManager<TransitionData> Scenes { get; set; }
 
-    public static GameBoard GameBoard { get; set; }
+    public static GameSceneScript GameScene { get; set; }
 }

@@ -166,3 +166,28 @@ public class KeyPressedEvent : GameEvent
 }
 
 public class Reset : GameEvent { }
+
+public class GameLoadEvent : GameEvent
+{
+    public GameLoadEvent(){ }
+}
+
+public class PlayMadeEvent : GameEvent
+{
+    public readonly Player player;
+    public readonly TileSpace tileSpace;
+    public PlayMadeEvent(Player p, TileSpace ts)
+    {
+        player = p;
+        tileSpace = ts;
+    }
+}
+
+public class GameEndEvent: GameEvent
+{
+    public readonly Player winner;
+    public GameEndEvent(Player p)
+    {
+        winner = p;
+    }
+}

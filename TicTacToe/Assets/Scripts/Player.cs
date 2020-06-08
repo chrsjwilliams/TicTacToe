@@ -5,14 +5,17 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public int playerNum { get; private set; }
-    [SerializeField] private Sprite playerIcon;
-    public Sprite PlayerIcon{ get; }
+    [SerializeField] private Sprite _playerIcon;
+    public Sprite PlayerIcon{ get { return _playerIcon; } }
     public bool isTurn;
 
-    public void Init(int _playerNum,Sprite icon)
+    public Color[] playerColor;
+
+    public void Init(int num,Sprite icon, Color[] colors)
     {
-        playerNum = _playerNum;
-        playerIcon = icon;
+        playerNum = num;
+        _playerIcon = icon;
+        playerColor = colors;
     }
 
 }

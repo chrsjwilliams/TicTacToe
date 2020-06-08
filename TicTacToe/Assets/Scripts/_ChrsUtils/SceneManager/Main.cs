@@ -70,7 +70,7 @@ public class Main : MonoBehaviour
         InitalizeServices();
 
         if(!DEBUG_MODE)
-            Services.Scenes.PushScene<GameSceneScript>();
+            Services.Scenes.PushScene<TitleSceneScript>();
     }
 
     private void InitalizeServices()

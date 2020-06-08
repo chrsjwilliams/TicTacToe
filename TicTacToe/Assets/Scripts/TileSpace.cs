@@ -6,31 +6,63 @@ using UnityEngine;
 
 public class TileSpace : MonoBehaviour
 {
+    public enum TileSpaceState { EMPTY = 0, PLAYER1, PLAYER2 }
+
+    public Vector2 coord;
     private int _touchID;
+
+    public int tileNum { get; private set; }
     public Player occupyingPlayer;
+    public TileSpaceState state { get; private set; }
 
-    private Sprite _occupyingIcon;
+    [SerializeField] private SpriteRenderer _occupyingIcon;
 
-    private SpriteRenderer _renderer;
+    public SpriteRenderer renderer;
 
     private TaskManager _tm = new TaskManager();
 
     // Start is called before the first frame update
     void Start()
     {
-        _renderer = GetComponent<SpriteRenderer>();
-        _occupyingIcon = _renderer.sprite;
+        
+    }
 
+    public void Init(int xCoord, int yCoord, int tn)
+    {
+        coord = new Vector2(xCoord, yCoord);
+        tileNum = tn;
+        renderer = GetComponent<SpriteRenderer>();
+        
         _touchID = -1;
+
+        state = TileSpaceState.EMPTY;
 
         Services.EventManager.Register<TouchDown>(OnTouchDown);
         Services.EventManager.Register<MouseDown>(OnMouseDown);
+        Services.EventManager.Register<GameEndEvent>(OnGameEnd);
+    }
+
+    private void OnDestroy() 
+    {
+        Services.EventManager.Unregister<TouchDown>(OnTouchDown);
+        Services.EventManager.Unregister<MouseDown>(OnMouseDown);
+        Services.EventManager.Unregister<TouchUp>(OnTouchUp);
+        Services.EventManager.Unregister<MouseUp>(OnMouseUp);
+        Services.EventManager.Unregister<GameEndEvent>(OnGameEnd);
+
+    }
+
+    public void OnGameEnd(GameEndEvent e)
+    {
+        Services.EventManager.Unregister<TouchDown>(OnTouchDown);
+        Services.EventManager.Unregister<MouseDown>(OnMouseDown);
+
     }
 
     private bool PointContainedInTile(Vector3 point)
     {
-        Vector3 extents = _renderer.bounds.extents;
-        Vector3 centerPoint = _renderer.transform.position;
+        Vector3 extents = renderer.bounds.extents;
+        Vector3 centerPoint = renderer.transform.position;
 
         return  point.x >= centerPoint.x - extents.x && point.x <= centerPoint.x + extents.x &&
                 point.y >= centerPoint.y - extents.y && point.y <= centerPoint.y + extents.y;
@@ -68,8 +100,14 @@ public class TileSpace : MonoBehaviour
     private void OnInputDown()
     {
 
-        Debug.Log(name + " Touch Down!");
         // Check if occupying piece is null and provide user feedback
+
+        if(occupyingPlayer == null)
+        {
+            SetOccupyingPlayer(Services.GameScene.currentPlayer);
+            Services.EventManager.Fire(new PlayMadeEvent(occupyingPlayer, this));
+
+        }
 
         Services.EventManager.Register<TouchUp>(OnTouchUp);
         Services.EventManager.Register<MouseUp>(OnMouseUp);
@@ -94,9 +132,6 @@ public class TileSpace : MonoBehaviour
 
     private void OnInputUp()
     {
-
-        //Debug.Log(name + " Touch Up!");
-
         
         Services.EventManager.Register<TouchDown>(OnTouchDown);
         Services.EventManager.Register<MouseDown>(OnMouseDown);
@@ -106,8 +141,10 @@ public class TileSpace : MonoBehaviour
     }
 
     public void SetOccupyingPlayer(Player p){
+        state = (TileSpaceState)p.playerNum;
         occupyingPlayer = p;
-        _occupyingIcon = occupyingPlayer.PlayerIcon;
+        _occupyingIcon.sprite = occupyingPlayer.PlayerIcon;
+        _occupyingIcon.color = p.playerColor[0];
     }
 
     // TODO: Animation on being selected
