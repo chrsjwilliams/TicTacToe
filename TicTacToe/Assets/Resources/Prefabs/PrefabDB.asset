@@ -17,3 +17,5 @@ MonoBehaviour:
   - {fileID: 4207158003519466048, guid: a2f95a1b610a444898229f29f504eedf, type: 3}
   - {fileID: 2495450921293274223, guid: 767ad10a5512c42089e4541b93403822, type: 3}
   _tile: {fileID: 9159609385825692768, guid: 5acec69bd9aab474fb1b610d4a2e0b8d, type: 3}
+  _shockwave: {fileID: 444252803797988895, guid: 5dbf8ddb1bbea455e85e31eebd5c409d, type: 3}
+  _winnerConfetti: {fileID: 7275431351529339577, guid: f71879bcc384d42d1be8a8281cfaf4fd, type: 3}

@@ -19,6 +19,12 @@ public class BoardEntryAnimation : Task
     private Color _startColor = new Color(1, 1, 1, 0);
     private Color _targetColor;
 
+    private bool _isEntering;
+
+    public BoardEntryAnimation(bool isEntering = false)
+    {
+        _isEntering = isEntering;
+    }
 
     protected override void Init()
     {
@@ -29,13 +35,27 @@ public class BoardEntryAnimation : Task
         _totalDuration = _animDuration + (_staggerTime * (_mapHeight + _mapWidth));
         _tilesOn = new bool[_mapWidth, _mapHeight];
         _basePositions = new Vector3[_mapWidth, _mapHeight];
-        _targetColor = _map[0, 0].renderer.color;
+        if(_isEntering)
+        {
+            _startColor = new Color(1, 1, 1, 0);
+            _targetColor = _map[0, 0].renderer.color;
+        }
+        else
+        {
+            _targetColor = new Color(1,1,1,0);
+        }
         for (int i = 0; i < _mapWidth; i++)
         {
             for (int j = 0; j < _mapHeight; j++)
             {
                 _basePositions[i, j] = _map[i, j].transform.position;
-                _map[i, j].renderer.color = new Color(0, 0, 0, 0);
+                if(_isEntering)
+                {
+                    _map[i, j].renderer.color = _startColor;
+                }
+                _map[i, j].EnableInput(false);
+
+                
             }
         }
     }
@@ -57,9 +77,26 @@ public class BoardEntryAnimation : Task
                 }
                 var progress = Mathf.Min((_timeElapsed - ((i + j) * _staggerTime)) / _animDuration, 1);
 
-                _map[i, j].renderer.color = Color.Lerp(_map[i, j].renderer.color, _targetColor, EasingEquations.Easing.QuadEaseOut(progress / 100));
-                mapTile.transform.position = Vector3.Lerp(_basePositions[i, j] + _offset,
-                    _basePositions[i, j], EasingEquations.Easing.QuadEaseOut(progress));
+                if (_isEntering)
+                {
+                    _map[i, j].renderer.color = Color.Lerp(_map[i, j].renderer.color, _targetColor, EasingEquations.Easing.QuadEaseOut(progress / 100));
+                    mapTile.transform.position = Vector3.Lerp(_basePositions[i, j] + _offset,
+                        _basePositions[i, j], EasingEquations.Easing.QuadEaseOut(progress));
+                }
+                else
+                {
+                    _map[i, j].renderer.color = Color.Lerp( _map[i, j].renderer.color,
+                                                            _targetColor, 
+                                                            EasingEquations.Easing.QuadEaseOut(progress / 100));
+                    if(_map[i,j].occupyingPlayer != null)
+                        _map[i, j].occupyingIcon.color = Color.Lerp(_map[i, j].occupyingIcon.color, 
+                                                                    _targetColor, 
+                                                                    EasingEquations.Easing.QuadEaseOut(progress / 100));
+
+                    mapTile.transform.position = Vector3.Lerp(  _basePositions[i, j],
+                                                                _basePositions[i, j] + _offset, 
+                                                                EasingEquations.Easing.QuadEaseOut(progress));
+                }
             }
         }
 
@@ -79,6 +116,7 @@ public class BoardEntryAnimation : Task
             {
                 _map[i, j].gameObject.SetActive(true);
                 _map[i, j].transform.position = _basePositions[i, j];
+                _map[i, j].EnableInput(true);
             }
         }
     }

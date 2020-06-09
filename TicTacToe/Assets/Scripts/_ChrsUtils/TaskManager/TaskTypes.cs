@@ -193,7 +193,8 @@ public class LERPColor : TimedTask
     public Color End { get; private set; }
     public SpriteRenderer Sprite { get; private set; }
     public Text Text { get; private set; }
-    public TextMeshProUGUI[] TMP { get; private set; }
+    public TextMeshProUGUI[] TMPArray { get; private set; }
+    public TextMeshProUGUI TMP { get; private set; }
     public Image Image { get; private set; }
     public Camera Camera;
 
@@ -229,6 +230,13 @@ public class LERPColor : TimedTask
     {
         Start = start;
         End = end;
+        TMPArray = text;
+    }
+
+    public LERPColor(TextMeshProUGUI text, Color start, Color end, float duration) : base(duration)
+    {
+        Start = start;
+        End = end;
         TMP = text;
     }
     
@@ -245,10 +253,11 @@ public class LERPColor : TimedTask
         else if (Text) Text.color = Color.Lerp(Start, End, t);
         else if (Image) Image.color = Color.Lerp(Start, End, t);
         else if (Camera) Camera.backgroundColor = Color.Lerp(Start, End, t);
-        else if (TMP.Length >= 0)
+        else if (TMP) TMP.color = Color.Lerp(Start, End, t);
+        else if (TMPArray.Length >= 0)
         {
-            for (int i = 0; i < TMP.Length; i++)
-                TMP[i].color = Color.Lerp(Start, End, t);
+            for (int i = 0; i < TMPArray.Length; i++)
+                TMPArray[i].color = Color.Lerp(Start, End, t);
         }
         else _Color = Color.Lerp(Start, End, t);
     }

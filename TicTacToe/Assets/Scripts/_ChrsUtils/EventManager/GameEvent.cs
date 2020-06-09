@@ -191,3 +191,8 @@ public class GameEndEvent: GameEvent
         winner = p;
     }
 }
+
+public class RefreshGameBaord : GameEvent
+{
+    public RefreshGameBaord() {}
+}

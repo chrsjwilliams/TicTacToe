@@ -178,5 +178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 619230cf824b44a938fe34b7602ea1ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coord: {x: 0, y: 0}
   occupyingPlayer: {fileID: 0}
-  _occupyingIcon: {fileID: 1962408352967800477}
+  occupyingIcon: {fileID: 1962408352967800477}
+  renderer: {fileID: 3901331150291687884}

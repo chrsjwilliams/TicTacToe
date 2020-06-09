@@ -23,6 +23,11 @@ public class TitleSceneScript : Scene<TransitionData>
 
         Services.EventManager.Register<GameLoadEvent>(OnGameLoad);
 
+        for (int i = 0; i < titleText.Length; i++)
+        {
+            titleText[i].gameObject.SetActive(false);
+        }
+
         buttonText[0].color = new Color(0, 0, 0, 0);
 
         TaskQueue titleEntryTasks = new TaskQueue();
@@ -49,11 +54,11 @@ public class TitleSceneScript : Scene<TransitionData>
         hasLoadGame = false;
         TaskQueue startGameTasks = new TaskQueue();
         Task slideTitleOut = new TitleEntryAnimation(titleText, true);
-        Task fadeStartText = new LERPColor(buttonText, buttonText[0].color, transparent, 0.5f);
+        Task fadeStartText = new LERPColor(buttonText, buttonText[0].color, transparent, 0.3f);
         Task beginGame = new ActionTask(TransitionToGame);
 
-        startGameTasks.Add(slideTitleOut);
         startGameTasks.Add(fadeStartText);
+        startGameTasks.Add(slideTitleOut);
         startGameTasks.Add(beginGame);
 
         _tm.Do(startGameTasks);

@@ -6,7 +6,7 @@ using TMPro;
 public class TitleEntryAnimation : Task
 {
     private float _timeElapsed;
-    private const float _animDuration = 0.5f;
+    private const float _animDuration = 1.5f;
     private const float _staggerTime = 0.3f;
     private float _totalDuration;
 
@@ -17,7 +17,12 @@ public class TitleEntryAnimation : Task
     private Vector3[] _startPos;
     private Vector3[] _targetPos;
 
+    private Color _startColor = new Color(1, 1, 1, 0);
+    private Color _targetColor;
+    
     private bool _transitionOut;
+
+    private float _fadeRate;
 
     public TitleEntryAnimation(TextMeshProUGUI[] tt, bool transitionOut = false)
     {
@@ -25,7 +30,17 @@ public class TitleEntryAnimation : Task
         _transitionOut = transitionOut;
         _startPos = new Vector3[_titleText.Length];
         _targetPos = new Vector3[_titleText.Length];
-
+        if(_transitionOut)
+        {
+            _startColor = _titleText[0].color;
+            _targetColor = new Color(1, 1, 1, 0);
+            _fadeRate = 2.5f;
+        }
+        else
+        {
+            _targetColor = _titleText[0].color;
+            _fadeRate = 60;
+        }
     }
 
 
@@ -54,6 +69,8 @@ public class TitleEntryAnimation : Task
                                             0);
                 _titleText[i].transform.localPosition = new Vector3(_startPos[i].x, _startPos[i].y, _startPos[i].z);   
             }
+            _titleText[i].color = _startColor;
+            _titleText[i].gameObject.SetActive(true);
         }
     }
 
@@ -65,6 +82,7 @@ public class TitleEntryAnimation : Task
         {
             var progress = Mathf.Min((_timeElapsed - (i * _staggerTime)) / _animDuration, 1);
             _titleText[i].transform.localPosition = Vector3.Lerp(_startPos[i], _targetPos[i], EasingEquations.Easing.QuadEaseOut(progress));
+            _titleText[i].color = Color.Lerp(_titleText[i].color, _targetColor, EasingEquations.Easing.QuadEaseOut(progress/ _fadeRate));
 
         }
 

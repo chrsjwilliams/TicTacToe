@@ -295,4 +295,31 @@ public class TaskQueue
     }
 }
 
+public class TaskTreeQueue
+{
+    public List<TaskTree> tasksTrees;
+
+    public TaskTreeQueue(List<TaskTree> taskTreeList)
+    {
+        tasksTrees = taskTreeList;
+    }
+
+    public TaskTreeQueue()
+    {
+        tasksTrees = new List<TaskTree>();
+    }
+
+    public TaskTreeQueue Then(TaskTreeQueue taskQueue)
+    {
+        tasksTrees.AddRange(taskQueue.tasksTrees);
+        return this;
+    }
+
+    public TaskTreeQueue Add(TaskTree task)
+    {
+        tasksTrees.Add(task);
+        return this;
+    }
+}
+
 

@@ -15,7 +15,7 @@ public class TileSpace : MonoBehaviour
     public Player occupyingPlayer;
     public TileSpaceState state { get; private set; }
 
-    [SerializeField] private SpriteRenderer _occupyingIcon;
+    public SpriteRenderer occupyingIcon;
 
     public SpriteRenderer renderer;
 
@@ -37,9 +37,22 @@ public class TileSpace : MonoBehaviour
 
         state = TileSpaceState.EMPTY;
 
-        Services.EventManager.Register<TouchDown>(OnTouchDown);
-        Services.EventManager.Register<MouseDown>(OnMouseDown);
+        
         Services.EventManager.Register<GameEndEvent>(OnGameEnd);
+    }
+
+    public void EnableInput(bool enable)
+    {
+        if(enable)
+        {
+            Services.EventManager.Register<TouchDown>(OnTouchDown);
+            Services.EventManager.Register<MouseDown>(OnMouseDown);
+        }
+        else
+        {
+            Services.EventManager.Unregister<TouchDown>(OnTouchDown);
+            Services.EventManager.Unregister<MouseDown>(OnMouseDown);
+        }
     }
 
     private void OnDestroy() 
@@ -104,6 +117,8 @@ public class TileSpace : MonoBehaviour
 
         if(occupyingPlayer == null)
         {
+            Shockwave shockwave = Instantiate(Services.Prefabs.Shockwave, transform.position, Quaternion.identity);
+            shockwave.Init(Services.GameScene.currentPlayer, transform.position);
             SetOccupyingPlayer(Services.GameScene.currentPlayer);
             Services.EventManager.Fire(new PlayMadeEvent(occupyingPlayer, this));
 
@@ -143,8 +158,8 @@ public class TileSpace : MonoBehaviour
     public void SetOccupyingPlayer(Player p){
         state = (TileSpaceState)p.playerNum;
         occupyingPlayer = p;
-        _occupyingIcon.sprite = occupyingPlayer.PlayerIcon;
-        _occupyingIcon.color = p.playerColor[0];
+        occupyingIcon.color = p.playerColor[0];
+        occupyingIcon.sprite = occupyingPlayer.PlayerIcon;
     }
 
     // TODO: Animation on being selected

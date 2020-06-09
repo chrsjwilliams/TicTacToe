@@ -84,7 +84,6 @@ public class GameBoard : MonoBehaviour
     public void Init(BoardInfo i)
     {
         info = i;
-        // TODO: Board Entry Animation
         gameBoard = new TileSpace[info.col, info.row];
         emptySpaces = info.col * info.row;
         int tileNum = 0;
@@ -107,10 +106,22 @@ public class GameBoard : MonoBehaviour
         EstablishWinningSets();
         Services.EventManager.Register<PlayMadeEvent>(OnPlayMade);
 
-        Task entryAnimation = new BoardEntryAnimation();
+        Task entryAnimation = new BoardEntryAnimation(true);
         _tm.Do(entryAnimation);
     }
 
+    private void OnDestroy() 
+    {
+        Services.EventManager.Unregister<PlayMadeEvent>(OnPlayMade);
+
+    }
+
+    public void BoardExitAnimation()
+    {
+
+        Task entryAnimation = new BoardEntryAnimation();
+        _tm.Do(entryAnimation);
+    }
 
     public void OnPlayMade(PlayMadeEvent e)
     {
@@ -160,6 +171,7 @@ public class GameBoard : MonoBehaviour
     private bool CheckSet(HashSet<Vector2> set, Vector2 candidteCoord)
     {
         Player occupyingPlayer = gameBoard[(int)candidteCoord.x, (int)candidteCoord.y].occupyingPlayer;
+        if(occupyingPlayer == null) return false;
         foreach(Vector2 coord in set)
         {
             if(occupyingPlayer != gameBoard[(int)coord.x, (int)coord.y].occupyingPlayer)

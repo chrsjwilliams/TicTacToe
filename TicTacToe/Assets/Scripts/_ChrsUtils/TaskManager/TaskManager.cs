@@ -39,6 +39,15 @@ public class TaskManager
         }
     }
 
+    public void Do(TaskTreeQueue taskTreeQueue)
+    {
+        Do(taskTreeQueue.tasksTrees[0]);
+        for (int i = 1; i < taskTreeQueue.tasksTrees.Count; i++)
+        {
+            taskTreeQueue.tasksTrees[i - 1].Then(taskTreeQueue.tasksTrees[i]);
+        }
+    }
+
     public void Update()
     {
         Task task;
